@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="preview_title">#3E5486</color>
+
+    <color name="preview_image_mask_color">#22000000</color>
+</resources>

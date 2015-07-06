@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" defaultCharsetForPropertiesFiles="UTF-8">
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cn/iam007/crop/master/CropMasterApplication.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cn/iam007/crop/master/ui/entry/MainActivity.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/app/src/main/java/cn/iam007/mediapicker/MediaPickerGallery.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base/build.gradle" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base/libs/universal-image-loader-1.9.3.jar" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base/src/main/java/cn/iam007/base/BaseApplication.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base/src/main/java/cn/iam007/base/utils/ImageUtils.java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/base/src/main/res/drawable-xxhdpi/iam007_image_show_on_loading_default.png" charset="UTF-8" />
+    <file url="PROJECT" charset="UTF-8" />
+  </component>
+</project>

@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Crop Master</string>
+
+    <string name="next_step">下一步</string>
+
+    <!-- 剪裁图片的activity字符串 -->
+    <string name="crop_activity_title">选择组合</string>
+    <string name="crop_activity_avatar_name">小海</string>
+    <string name="crop_activity_preview_info">当前是朋友圈组图效果预览模式</string>
+
+</resources>
