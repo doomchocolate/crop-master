@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="crop_activity_preview_grid_gap_width">1dp</dimen>
+</resources>

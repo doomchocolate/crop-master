@@ -1,51 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <RelativeLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp">
-
-        <ImageView
-            android:id="@+id/avatar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/avatar_default"/>
+        android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_toRightOf="@+id/avatar"
             android:orientation="vertical">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/crop_activity_avatar_name"
-                android:textColor="@color/preview_title"
-                android:textSize="16sp"/>
-
-            <TextView
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/crop_activity_preview_info"
-                android:textColor="@color/black_light_333333"
-                android:textSize="16sp"/>
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:id="@+id/avatar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/avatar_default"/>
+
+                <LinearLayout
+                    android:id="@+id/preview_info_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_toRightOf="@+id/avatar"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/crop_activity_avatar_name"
+                        android:textColor="@color/preview_title"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text="@string/crop_activity_preview_info"
+                        android:textColor="@color/black_light_333333"
+                        android:textSize="16sp"/>
+
+                </LinearLayout>
+
+            </RelativeLayout>
+
+            <cn.iam007.crop.master.ui.crop.widget.CropImageWidget
+                android:id="@+id/crop_widget"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/preview_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:textColor="@color/text_grey_color"
+                    android:textSize="12sp"
+                    android:text="@string/crop_activity_preview_text" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/crop_activity_comment"/>
+            </RelativeLayout>
 
         </LinearLayout>
+    </ScrollView>
 
-    </RelativeLayout>
-
-    <cn.iam007.crop.master.ui.crop.widget.CropImageWidget
-        android:id="@+id/cropWidget"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"/>
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:background="@color/black_light_222222">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/style_btn_2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/crop_activity_style_btn_2"/>
+
+        <ImageView
+            android:id="@+id/style_btn_3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/crop_activity_style_btn_3"/>
+
+        <ImageView
+            android:id="@+id/style_btn_4"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/crop_activity_style_btn_4"/>
+
+        <ImageView
+            android:id="@+id/style_btn_6"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:scaleType="centerCrop"
+            android:src="@drawable/crop_activity_style_btn_6"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

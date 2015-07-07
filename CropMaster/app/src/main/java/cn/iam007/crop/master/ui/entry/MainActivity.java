@@ -7,6 +7,8 @@ import android.view.View;
 import cn.iam007.base.BaseActivity;
 import cn.iam007.crop.master.R;
 import cn.iam007.crop.master.ui.crop.CropActivity;
+import cn.iam007.mediapicker.MediaPickerBuilder;
+import cn.iam007.mediapicker.MediaPickerCamera;
 import cn.iam007.mediapicker.MediaPickerGallery;
 import cn.iam007.mediapicker.MediaPickerSource;
 
@@ -24,18 +26,31 @@ public class MainActivity extends BaseActivity {
         findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MediaPickerGallery().start(MainActivity.this);
+//                new MediaPickerGallery().start(MainActivity.this);
+                MediaPickerBuilder builder = MediaPickerBuilder.newInstance(MainActivity.this);
+                builder.showDialog();
             }
         });
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent result) {
-        if (requestCode == MediaPickerSource.GALLERY_IMAGE && resultCode == RESULT_OK) {
-            Intent intent = new Intent();
-            intent.setClass(this, CropActivity.class);
-            intent.setData(result.getData());
-            startActivity(intent);
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
+                case MediaPickerSource.GALLERY_IMAGE:
+                    Intent intent = new Intent();
+                    intent.setClass(this, CropActivity.class);
+                    intent.setData(result.getData());
+                    startActivity(intent);
+                    break;
+
+                case MediaPickerSource.CAPTURE_IMAGE:
+                    intent = new Intent();
+                    intent.setClass(this, CropActivity.class);
+                    intent.setData(MediaPickerCamera.getUri());
+                    startActivity(intent);
+                    break;
+            }
         }
     }
 }

@@ -20,6 +20,23 @@
     <option name="id" value="Android" />
   </component>
   <component name="SvnBranchConfigurationManager">
+    <option name="myConfigurationMap">
+      <map>
+        <entry key="$PROJECT_DIR$">
+          <value>
+            <SvnBranchConfiguration>
+              <option name="branchUrls">
+                <list>
+                  <option value="svn://192.168.41.247:7654/repos_mobile/android/branches" />
+                  <option value="svn://192.168.41.247:7654/repos_mobile/android/tags" />
+                </list>
+              </option>
+              <option name="trunkUrl" value="svn://192.168.41.247:7654/repos_mobile/android/trunk" />
+            </SvnBranchConfiguration>
+          </value>
+        </entry>
+      </map>
+    </option>
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="masterDetails">

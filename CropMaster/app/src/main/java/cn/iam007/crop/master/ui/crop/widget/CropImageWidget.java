@@ -1,25 +1,16 @@
 package cn.iam007.crop.master.ui.crop.widget;
 
-import android.content.ContentResolver;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.Matrix;
+import android.graphics.Point;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import java.io.IOException;
-
-import cn.iam007.base.utils.LogUtil;
 import cn.iam007.base.utils.PlatformUtils;
+import cn.iam007.base.utils.ViewUtils;
 import cn.iam007.crop.master.R;
 
 /**
@@ -31,14 +22,14 @@ public class CropImageWidget extends RelativeLayout {
     private ZoomImageView mImageView;
 
     // 用于表示裁剪区域
-    private LinearLayout mPreviewArea;
+    private View mPreviewArea;
 
     // 用于表示是那种裁剪方式
-    private TYPE mType;
+    private TYPE mType = TYPE.FOUR;
 
 
     public enum TYPE {
-        SECOND, THIRD, FOUR, SIX
+        NONE, SECOND, THIRD, FOUR, SIX
     }
 
     public CropImageWidget(Context context, AttributeSet attrs) {
@@ -47,19 +38,8 @@ public class CropImageWidget extends RelativeLayout {
         init();
     }
 
-    /**
-     * 设置裁剪的类型
-     * 参考（@link cn.iam007.crop.master.ui.crop.widget.CropImageWidget）
-     *
-     * @param type 裁剪的类型
-     */
-    public void setType(TYPE type) {
-        mType = type;
-    }
-
     private int mOriginalWidth = 0;
     private int mOriginalHeight = 0;
-    private float mScaleValue = 1.0f;
 
     private void init() {
         mImageView = new ZoomImageView(getContext());
@@ -77,15 +57,7 @@ public class CropImageWidget extends RelativeLayout {
         layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         addView(view, layoutParams);
 
-        mPreviewArea = new LinearLayout(getContext());
-        mPreviewArea.setBackgroundColor(Color.argb(0x22, 0xFF, 0xFF, 0xFF));
-        layoutParams = new LayoutParams(400, 200);
-        layoutParams.leftMargin = 150;
-        layoutParams.topMargin = 150;
-        addView(mPreviewArea, layoutParams);
-
-        mImageView.setMinZoom(400.f / mOriginalWidth);
-        mImageView.setRestrictArea(150, 150, 400, 200);
+        initPreviewGridArea();
     }
 
     @Override
@@ -94,7 +66,6 @@ public class CropImageWidget extends RelativeLayout {
 
         int width = MeasureSpec.getSize(widthMeasureSpec);
         int height = MeasureSpec.getSize(heightMeasureSpec);
-        LogUtil.d("Width:" + width + ", Height:" + height);
     }
 
     /**
@@ -104,40 +75,113 @@ public class CropImageWidget extends RelativeLayout {
      */
     public void setCropImage(Uri uri) {
         mImageView.setImageURI(uri);
-//        ContentResolver contentResolver = getContext().getContentResolver();
-//        try {
-//            Bitmap photo = MediaStore.Images.Media.getBitmap(contentResolver, uri);
-//            mOriginalWidth = PlatformUtils.getScreenWidth(getContext());
-//            float scale = mOriginalWidth / photo.getWidth();
-//            mOriginalHeight = (int) (photo.getHeight() * scale);
-//            LayoutParams layoutParams = (LayoutParams) mImageView.getLayoutParams();
-//            layoutParams.width = mOriginalWidth;
-//            layoutParams.height = mOriginalHeight;
-//            mImageView.setLayoutParams(layoutParams);
-//            Bitmap bitmap = zoomBitmap(photo, scale);
-//            mImageView.setImageBitmap(bitmap);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 
-    private Bitmap zoomBitmap(Bitmap bitmap, float scale) {
-        int w = bitmap.getWidth();
-        int h = bitmap.getHeight();
+    private ImageView mPreviewGrid_1_1;
+    private ImageView mPreviewGrid_1_2;
+    private ImageView mPreviewGrid_1_3;
+    private ImageView mPreviewGrid_2_1;
+    private ImageView mPreviewGrid_2_2;
+    private ImageView mPreviewGrid_2_3;
 
-        Matrix matrix = new Matrix();
-        matrix.postScale(scale, scale);
-        Bitmap newBmp = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
 
-        return newBmp;
+    private void initPreviewGridArea() {
+        mPreviewArea = View.inflate(getContext(), R.layout.activity_crop_preview_grid, null);
+        addView(mPreviewArea);
+
+        mPreviewGrid_1_1 = (ImageView) mPreviewArea.findViewById(R.id.index_1_1);
+        mPreviewGrid_1_2 = (ImageView) mPreviewArea.findViewById(R.id.index_1_2);
+        mPreviewGrid_1_3 = (ImageView) mPreviewArea.findViewById(R.id.index_1_3);
+        mPreviewGrid_2_1 = (ImageView) mPreviewArea.findViewById(R.id.index_2_1);
+        mPreviewGrid_2_2 = (ImageView) mPreviewArea.findViewById(R.id.index_2_2);
+        mPreviewGrid_2_3 = (ImageView) mPreviewArea.findViewById(R.id.index_2_3);
     }
 
-    private void doScale(float scale) {
-        mScaleValue *= scale;
-        ViewGroup.LayoutParams layoutParams = mImageView.getLayoutParams();
-        layoutParams.width = (int) (mOriginalWidth * mScaleValue);
-        layoutParams.height = (int) (mOriginalHeight * mScaleValue);
-        mImageView.setLayoutParams(layoutParams);
-        LogUtil.d("2Width:" + layoutParams.width + ", Height:" + layoutParams.height);
+    public void setPreviewGridSize(int x, int y, int width) {
+        LayoutParams layoutParams = (LayoutParams) mPreviewArea.getLayoutParams();
+        layoutParams.leftMargin = x;
+        layoutParams.topMargin = y;
+        layoutParams.width = width;
+        int gap = getResources().getDimensionPixelSize(R.dimen.crop_activity_preview_grid_gap_width);
+        layoutParams.height = (int) ((width - 2*gap) / 3.0f * 2) + gap;
+        mPreviewArea.setLayoutParams(layoutParams);
+    }
+
+    /**
+     * 设置裁剪的类型
+     * 参考（@link cn.iam007.crop.master.ui.crop.widget.CropImageWidget）
+     *
+     * @param type 裁剪的类型
+     */
+    public void setType(TYPE type, boolean force) {
+        if ((type != TYPE.NONE) && ((mType != type) || force)) {
+            mType = type;
+
+            mPreviewGrid_1_1.setImageResource(R.drawable.crop_activity_preview_grid_1);
+            mPreviewGrid_1_2.setImageResource(R.drawable.crop_activity_preview_grid_2);
+
+            mPreviewGrid_1_3.setVisibility(View.INVISIBLE);
+            mPreviewGrid_2_1.setVisibility(View.INVISIBLE);
+            mPreviewGrid_2_2.setVisibility(View.INVISIBLE);
+            mPreviewGrid_2_3.setVisibility(View.INVISIBLE);
+
+            Point point = ViewUtils.translateLocationWithOther(mPreviewGrid_1_1, this);
+            int x = point.x;
+            int y = point.y;
+            int width = 0;
+            int height = 0;
+
+            View boundView = null;
+
+            switch (type) {
+                case SECOND:
+                    boundView = mPreviewGrid_1_2;
+                    break;
+
+                case THIRD:
+                    mPreviewGrid_1_3.setImageResource(R.drawable.crop_activity_preview_grid_3);
+                    mPreviewGrid_1_3.setVisibility(View.VISIBLE);
+                    boundView = mPreviewGrid_1_3;
+                    break;
+
+                case FOUR:
+                    mPreviewGrid_2_1.setImageResource(R.drawable.crop_activity_preview_grid_3);
+                    mPreviewGrid_2_2.setImageResource(R.drawable.crop_activity_preview_grid_4);
+                    mPreviewGrid_2_1.setVisibility(View.VISIBLE);
+                    mPreviewGrid_2_2.setVisibility(View.VISIBLE);
+                    boundView = mPreviewGrid_2_2;
+                    break;
+
+                case SIX:
+                    mPreviewGrid_1_3.setImageResource(R.drawable.crop_activity_preview_grid_3);
+                    mPreviewGrid_2_1.setImageResource(R.drawable.crop_activity_preview_grid_4);
+                    mPreviewGrid_2_2.setImageResource(R.drawable.crop_activity_preview_grid_5);
+                    mPreviewGrid_2_3.setImageResource(R.drawable.crop_activity_preview_grid_6);
+                    mPreviewGrid_1_3.setVisibility(View.VISIBLE);
+                    mPreviewGrid_2_1.setVisibility(View.VISIBLE);
+                    mPreviewGrid_2_2.setVisibility(View.VISIBLE);
+                    mPreviewGrid_2_3.setVisibility(View.VISIBLE);
+                    boundView = mPreviewGrid_2_3;
+                    break;
+            }
+
+            point = ViewUtils.translateLocationWithOther(boundView, this);
+            width = point.x + boundView.getWidth() - x;
+            height = point.y + boundView.getHeight() - y;
+
+            mImageView.setMinZoom(((float) width) / mOriginalWidth);
+            mImageView.setRestrictArea(x, y, width, height, true);
+        }
+    }
+
+    public void debugCrop() {
+        mImageView.debugCrop();
+    }
+
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        super.onLayout(changed, l, t, r, b);
+
+        setType(mType, true);
     }
 }

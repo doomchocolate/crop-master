@@ -3,14 +3,16 @@ package cn.iam007.mediapicker;
 import android.app.Activity;
 import android.content.Intent;
 
+import cn.iam007.crop.master.R;
+
 /**
  * Created by Administrator on 2015/7/1.
  */
 public class MediaPickerGallery implements MediaPickerSource {
 
     @Override
-    public String getName() {
-        return "Select a photo from gallery";
+    public int getName() {
+        return R.string.mediapicker_select_from_gallery;
     }
 
     @Override

@@ -2,5 +2,9 @@
 <resources>
     <color name="preview_title">#3E5486</color>
 
-    <color name="preview_image_mask_color">#22000000</color>
+    <color name="preview_image_mask_color">#66000000</color>
+    <color name="preview_grid_color">#22FFFFFF</color>
+    <color name="text_grey_color">#FFAAAAAA</color>
+
+    <color name="media_picker_dialog_item_text">#727272</color>
 </resources>

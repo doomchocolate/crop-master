@@ -4,9 +4,11 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -14,7 +16,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
@@ -24,7 +25,13 @@ import android.widget.ImageView;
 import android.widget.OverScroller;
 import android.widget.Scroller;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import cn.iam007.base.utils.LogUtil;
+import cn.iam007.base.utils.UriUtils;
 
 /**
  * 一个可以自定义手势缩放的图片控件
@@ -89,6 +96,8 @@ public class ZoomImageView extends ImageView {
     private GestureDetector.OnDoubleTapListener doubleTapListener = null;
     private OnTouchListener userTouchListener = null;
     private OnTouchImageViewListener touchImageViewListener = null;
+
+    private Uri mUri;
 
     public ZoomImageView(Context context) {
         super(context);
@@ -167,6 +176,8 @@ public class ZoomImageView extends ImageView {
         super.setImageURI(uri);
         savePreviousImageValues();
         fitImageToView();
+
+        mUri = uri;
     }
 
     @Override
@@ -334,6 +345,8 @@ public class ZoomImageView extends ImageView {
     public void setMinZoom(float min) {
         minScale = min;
         superMinScale = SUPER_MIN_MULTIPLIER * minScale;
+
+        fixScaleTrans();
     }
 
     /**
@@ -466,26 +479,13 @@ public class ZoomImageView extends ImageView {
     }
 
     /**
-     * When transitioning from zooming from focus to zoom from center (or vice versa)
-     * the image can become unaligned within the view. This is apparent when zooming
-     * quickly. When the content size is less than the view size, the content will often
-     * be centered incorrectly within the view. fixScaleTrans first calls fixTrans() and
-     * then makes sure the image is centered correctly within the view.
+     * 当用户在不同的组合中进行切换时，可能会造成当前缩放的图片的尺寸小于限制区域，需要进行调整
      */
-    /*
     private void fixScaleTrans() {
-        fixTrans();
-        matrix.getValues(m);
-        if (getImageWidth() < viewWidth) {
-            m[Matrix.MTRANS_X] = (viewWidth - getImageWidth()) / 2;
+        if (minScale > normalizedScale) {
+            scaleImage(minScale / normalizedScale, 0, 0, false);
         }
-
-        if (getImageHeight() < viewHeight) {
-            m[Matrix.MTRANS_Y] = (viewHeight - getImageHeight()) / 2;
-        }
-        matrix.setValues(m);
     }
-    */
 
     private float getFixTrans(float trans, float viewSize, float contentSize, int leftGap,
                               int rightGap) {
@@ -973,7 +973,6 @@ public class ZoomImageView extends ImageView {
 
         if (origScale != normalizedScale) {
             matrix.postScale((float) deltaScale, (float) deltaScale, focusX, focusY);
-//            fixScaleTrans();
         }
     }
 
@@ -1018,7 +1017,6 @@ public class ZoomImageView extends ImageView {
             double deltaScale = calculateDeltaScale(t);
             scaleImage(deltaScale, bitmapX, bitmapY, stretchImageToSuper);
             translateImageToCenterTouchPosition(t);
-//            fixScaleTrans();
             setImageMatrix(matrix);
 
             //
@@ -1311,7 +1309,7 @@ public class ZoomImageView extends ImageView {
     private void printMatrixInfo() {
         float[] n = new float[9];
         matrix.getValues(n);
-        Log.d(DEBUG,
+        LogUtil.d(
                 "Scale: " + n[Matrix.MSCALE_X] + " TransX: " + n[Matrix.MTRANS_X] + " TransY: " + n[Matrix.MTRANS_Y]);
     }
 
@@ -1325,16 +1323,22 @@ public class ZoomImageView extends ImageView {
     /**
      * 设置图片可以显示的区域
      *
-     * @param x      可以显示区域左上角x坐标
-     * @param y      可以显示区域左上角y坐标
-     * @param width  显示区域宽度
-     * @param height 显示区域高度
+     * @param x       可以显示区域左上角x坐标
+     * @param y       可以显示区域左上角y坐标
+     * @param width   显示区域宽度
+     * @param height  显示区域高度
+     * @param fixTran 是否重新限制显示区域
      */
-    public void setRestrictArea(int x, int y, int width, int height) {
+    public void setRestrictArea(int x, int y, int width, int height, boolean fixTran) {
         mLeftTopX = x;
         mLeftTopY = y;
         mRightBottomX = x + width;
         mRightBottomY = y + height;
+
+        if (fixTran) {
+            fixTrans();
+            setImageMatrix(matrix);
+        }
     }
 
     private int getTopGapY() {
@@ -1405,11 +1409,9 @@ public class ZoomImageView extends ImageView {
             }
 
             if (scroller.isFinished()) {
-                LogUtil.d("=================finished=================");
                 scroller = null;
                 fixTrans();
                 setImageMatrix(matrix);
-                LogUtil.d("finished:" + matrix.toString());
                 return;
             }
 
@@ -1436,10 +1438,53 @@ public class ZoomImageView extends ImageView {
                 }
                 matrix.setValues(m);
 
-                LogUtil.d(matrix.toString());
                 setImageMatrix(matrix);
                 compatPostOnAnimation(this);
             }
         }
+    }
+
+    public void debugCrop() {
+        Drawable drawable = getDrawable();
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+        Rect rect = drawable.getBounds();
+
+        LogUtil.d("intrinsicWidth=" + intrinsicWidth);
+        LogUtil.d("intrinsicHeight=" + intrinsicHeight);
+        LogUtil.d("getWidth=" + getWidth());
+        LogUtil.d("getHeight=" + getHeight());
+
+        String filePath = UriUtils.getImageAbsolutePath(getContext(), mUri);
+        LogUtil.d("Real file path:" + filePath);
+
+        // 获取真实图片尺寸
+        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+        Bitmap source = BitmapFactory.decodeFile(filePath, options);
+        LogUtil.d("options.outWidth=" + options.outWidth);
+        LogUtil.d("options.outHeight=" + options.outHeight);
+
+        float[] n = new float[9];
+        matrix.getValues(n);
+        float scale = options.outWidth / (intrinsicWidth * n[Matrix.MSCALE_X]);
+
+        int x = (int) (scale * (mLeftTopX - n[Matrix.MTRANS_X]));
+        int y = (int) (scale * (mLeftTopY - n[Matrix.MTRANS_Y]));
+        int width = (int) (scale * (mRightBottomX - mLeftTopX));
+        int height = (int) (scale * (mRightBottomY - mLeftTopY));
+        Bitmap output = Bitmap.createBitmap(source, x, y, width, height);
+        File file = new File(getContext().getExternalCacheDir(), "a.png");
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            output.compress(Bitmap.CompressFormat.PNG, 90, fos);
+            fos.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        printMatrixInfo();
     }
 }

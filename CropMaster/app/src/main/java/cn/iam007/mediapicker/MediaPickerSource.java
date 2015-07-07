@@ -16,7 +16,7 @@ public interface MediaPickerSource {
      *
      * @return 返回媒体源名
      */
-    String getName();
+    int getName();
 
     /**
      * 获取用于表示该媒体源的图标
