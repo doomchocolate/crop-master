@@ -16,8 +16,11 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.List;
 
+import cn.iam007.base.utils.DialogBuilder;
 import cn.iam007.base.utils.LogUtil;
 import cn.iam007.base.utils.PlatformUtils;
 
@@ -154,7 +157,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 break;
 
             default:
@@ -216,5 +219,28 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
 
         return launcher;
+    }
+
+    private MaterialDialog mProgressDialog = null;
+
+    protected MaterialDialog showProgressDialog() {
+        DialogBuilder builder = new DialogBuilder(this);
+        builder.progress(true, 100);
+        builder.content("Please waiting");
+        builder.cancelable(false);
+        mProgressDialog = builder.show();
+
+        return mProgressDialog;
+    }
+
+    protected void dismissProgressDialog(){
+        if (mProgressDialog != null) {
+            try {
+                mProgressDialog.dismiss();
+            } catch (Exception e) {
+
+            }
+        }
+        mProgressDialog = null;
     }
 }

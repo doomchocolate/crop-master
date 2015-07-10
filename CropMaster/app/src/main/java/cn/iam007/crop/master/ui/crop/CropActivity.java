@@ -18,6 +18,7 @@ import cn.iam007.base.BaseActivity;
 import cn.iam007.base.utils.PlatformUtils;
 import cn.iam007.crop.master.R;
 import cn.iam007.crop.master.ui.crop.widget.CropImageWidget;
+import cn.iam007.crop.master.ui.decorate.DecorateManager;
 
 /**
  * Created by Administrator on 2015/7/3.
@@ -50,10 +51,12 @@ public class CropActivity extends BaseActivity {
                     public void onGlobalLayout() {
                         int[] location = new int[2];
                         previewInfoContainer.getLocationInWindow(location);
+                        int areaGap = getResources().getDimensionPixelOffset(
+                                R.dimen.preview_area_right_gap_width);
                         int x = location[0];
-                        int y = 30;
-                        int tWidth = width - x - 30;
-                        mCropImageWidget.setPreviewGridSize(x, 30, tWidth);
+                        int y = areaGap;
+                        int tWidth = width - x - areaGap;
+                        mCropImageWidget.setPreviewGridSize(x, y, tWidth);
 
                         previewInfoContainer.getViewTreeObserver().removeGlobalOnLayoutListener(
                                 this);
@@ -80,7 +83,8 @@ public class CropActivity extends BaseActivity {
         switch (item.getItemId()) {
             case R.id.next_step:
                 Toast.makeText(this, "click on next step", Toast.LENGTH_SHORT).show();
-                mCropImageWidget.debugCrop();
+//                mCropImageWidget.debugCrop();
+                DecorateManager.startDecorate(this, mCropImageWidget.getCropImageInfo());
                 break;
         }
 

@@ -180,6 +180,10 @@ public class ZoomImageView extends ImageView {
         mUri = uri;
     }
 
+    public Uri getImageURI() {
+        return mUri;
+    }
+
     @Override
     public void setScaleType(ScaleType type) {
         if (type == ScaleType.FIT_START || type == ScaleType.FIT_END) {
@@ -1442,6 +1446,45 @@ public class ZoomImageView extends ImageView {
                 compatPostOnAnimation(this);
             }
         }
+    }
+
+    /**
+     * 获得真实图片限制区域尺寸
+     *
+     * @return
+     */
+    public Rect getRealRestrictArea() {
+        Rect rect = new Rect();
+
+        Drawable drawable = getDrawable();
+        int intrinsicWidth = drawable.getIntrinsicWidth();
+        int intrinsicHeight = drawable.getIntrinsicHeight();
+
+        String filePath = UriUtils.getImageAbsolutePath(getContext(), mUri);
+        LogUtil.d("Real file path:" + filePath);
+
+        // 获取真实图片尺寸
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options);
+        LogUtil.d("options.outWidth=" + options.outWidth);
+        LogUtil.d("options.outHeight=" + options.outHeight);
+
+        float[] n = new float[9];
+        matrix.getValues(n);
+        float scale = options.outWidth / (intrinsicWidth * n[Matrix.MSCALE_X]);
+
+        int x = (int) (scale * (mLeftTopX - n[Matrix.MTRANS_X]));
+        int y = (int) (scale * (mLeftTopY - n[Matrix.MTRANS_Y]));
+        int width = (int) (scale * (mRightBottomX - mLeftTopX));
+        int height = (int) (scale * (mRightBottomY - mLeftTopY));
+
+        rect.left = x;
+        rect.right = x + width - 1;
+        rect.top = y;
+        rect.bottom = y + height - 1;
+
+        return rect;
     }
 
     public void debugCrop() {

@@ -2,6 +2,8 @@ package cn.iam007.base.utils;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.UnlimitedDiscCache;
@@ -17,6 +19,9 @@ import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import cn.iam007.base.R;
 
@@ -125,6 +130,17 @@ public class ImageUtils {
                 .build();
     }
 
+    public static DisplayImageOptions getOptionsFadeInWithoutCache(int milliseconds) {
+        return new DisplayImageOptions.Builder().cacheOnDisk(false)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .cacheInMemory(false)
+                .displayer(new FadeInBitmapDisplayer(milliseconds))
+                .resetViewBeforeLoading(true)
+                .imageScaleType(ImageScaleType.EXACTLY)
+                .showImageOnLoading(R.drawable.iam007_image_show_on_loading_default)
+                .build();
+    }
+
     //    public static DisplayImageOptions getOptionCircle() {
     //        return new DisplayImageOptions.Builder().cacheOnDisk(true)
     //                .cacheInMemory(true)
@@ -154,5 +170,57 @@ public class ImageUtils {
         ImageLoader.getInstance().displayImage(imageUrl,
                 imageView,
                 getOptionsFadeIn());
+    }
+
+    /**
+     * 显示sdcard上图片
+     *
+     * @param filePath  图片的绝对路径
+     * @param imageView 显示图片的对象
+     */
+    public static void showImageByFile(String filePath, ImageView imageView) {
+        ImageLoader.getInstance().displayImage("file://" + filePath,
+                imageView,
+                getOptionsFadeInWithoutCache(250));
+    }
+
+    /**
+     * 截取图片文件的一部分
+     *
+     * @param filePath
+     * @param cropRect
+     * @param outputFilePath
+     */
+    public static boolean cropImageFile(String filePath, Rect cropRect, String outputFilePath) {
+        boolean result = false;
+        if (filePath != null && cropRect != null) {
+            Bitmap source = BitmapFactory.decodeFile(filePath);
+
+            int cropX = cropRect.left;
+            int cropY = cropRect.top;
+            int cropWidth = cropRect.right - cropRect.left + 1;
+            int cropHeight = cropRect.bottom - cropRect.top + 1;
+            Bitmap output = Bitmap.createBitmap(source, cropX, cropY, cropWidth, cropHeight);
+
+            File outputFile = new File(outputFilePath);
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(outputFile);
+                output.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                result = true;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                    }
+                }
+            }
+            output.recycle();
+            source.recycle();
+        }
+        return result;
     }
 }

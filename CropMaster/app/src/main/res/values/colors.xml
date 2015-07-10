@@ -7,4 +7,9 @@
     <color name="text_grey_color">#FFAAAAAA</color>
 
     <color name="media_picker_dialog_item_text">#727272</color>
+
+    <color name="decorate_activity_background">#131315</color>
+    <color name="decorate_activity_bottom_panel_background">#2E2E2E</color>
+
+    <color name="decorate_activity_grid_background">#22FFCF3F</color>
 </resources>

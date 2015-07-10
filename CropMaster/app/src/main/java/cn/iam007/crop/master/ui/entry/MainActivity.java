@@ -9,7 +9,6 @@ import cn.iam007.crop.master.R;
 import cn.iam007.crop.master.ui.crop.CropActivity;
 import cn.iam007.mediapicker.MediaPickerBuilder;
 import cn.iam007.mediapicker.MediaPickerCamera;
-import cn.iam007.mediapicker.MediaPickerGallery;
 import cn.iam007.mediapicker.MediaPickerSource;
 
 /**
@@ -23,10 +22,9 @@ public class MainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.root).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.main_select_image_bt).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                new MediaPickerGallery().start(MainActivity.this);
                 MediaPickerBuilder builder = MediaPickerBuilder.newInstance(MainActivity.this);
                 builder.showDialog();
             }

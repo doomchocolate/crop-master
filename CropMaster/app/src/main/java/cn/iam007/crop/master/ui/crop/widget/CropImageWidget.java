@@ -3,7 +3,10 @@ package cn.iam007.crop.master.ui.crop.widget;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,7 +32,35 @@ public class CropImageWidget extends RelativeLayout {
 
 
     public enum TYPE {
-        NONE, SECOND, THIRD, FOUR, SIX
+        NONE(0), SECOND(2), THIRD(3), FOUR(4), SIX(6);
+
+        int value = 0;
+
+        private TYPE(int value) {
+            this.value = value;
+        }
+
+        public int toInt() {
+            return value;
+        }
+
+        // 手写的从int到enum的转换函数
+        public static TYPE valueOf(int value) {
+            switch (value) {
+                case 0:
+                    return NONE;
+                case 2:
+                    return SECOND;
+                case 3:
+                    return THIRD;
+                case 4:
+                    return FOUR;
+                case 6:
+                    return SIX;
+                default:
+                    return null;
+            }
+        }
     }
 
     public CropImageWidget(Context context, AttributeSet attrs) {
@@ -102,8 +133,9 @@ public class CropImageWidget extends RelativeLayout {
         layoutParams.leftMargin = x;
         layoutParams.topMargin = y;
         layoutParams.width = width;
-        int gap = getResources().getDimensionPixelSize(R.dimen.crop_activity_preview_grid_gap_width);
-        layoutParams.height = (int) ((width - 2*gap) / 3.0f * 2) + gap;
+        int gap =
+                getResources().getDimensionPixelSize(R.dimen.crop_activity_preview_grid_gap_width);
+        layoutParams.height = (int) ((width - 2 * gap) / 3.0f * 2) + gap;
         mPreviewArea.setLayoutParams(layoutParams);
     }
 
@@ -183,5 +215,66 @@ public class CropImageWidget extends RelativeLayout {
         super.onLayout(changed, l, t, r, b);
 
         setType(mType, true);
+    }
+
+    public static class CropImageInfo implements Parcelable {
+        public Rect restrictArea;
+        public Uri uri;
+        public TYPE type;
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            dest.writeParcelable(uri, PARCELABLE_WRITE_RETURN_VALUE);
+            dest.writeInt(restrictArea.left);
+            dest.writeInt(restrictArea.top);
+            dest.writeInt(restrictArea.right);
+            dest.writeInt(restrictArea.bottom);
+            dest.writeInt(type.toInt());
+        }
+
+        public static final Parcelable.Creator<CropImageInfo> CREATOR =
+                new Parcelable.Creator<CropImageInfo>() {
+                    public CropImageInfo createFromParcel(Parcel in) {
+                        return new CropImageInfo(in);
+                    }
+
+                    public CropImageInfo[] newArray(int size) {
+                        return new CropImageInfo[size];
+                    }
+                };
+
+        private CropImageInfo(Parcel in) {
+            uri = in.readParcelable(null);
+            restrictArea = new Rect();
+            restrictArea.left = in.readInt();
+            restrictArea.top = in.readInt();
+            restrictArea.right = in.readInt();
+            restrictArea.bottom = in.readInt();
+            type = TYPE.valueOf(in.readInt());
+        }
+
+        public CropImageInfo() {
+        }
+
+        public CropImageInfo(CropImageInfo info){
+            restrictArea = info.restrictArea;
+            uri = info.uri;
+            type = info.type;
+        }
+    }
+
+    public CropImageInfo getCropImageInfo() {
+        CropImageInfo info = new CropImageInfo();
+
+        info.restrictArea = mImageView.getRealRestrictArea();
+        info.type = mType;
+        info.uri = mImageView.getImageURI();
+
+        return info;
     }
 }

@@ -4,6 +4,7 @@
     <string name="cancel">Cancel</string>
 
     <string name="next_step">下一步</string>
+    <string name="finish">完成</string>
 
     <!-- 剪裁图片的activity字符串 -->
     <string name="crop_activity_title">选择组合</string>
@@ -14,4 +15,8 @@
     <!-- Mediapicker related -->
     <string name="mediapicker_select_from_gallery">Select a photo from gallery</string>
     <string name="mediapicker_take_from_camera">Take a photo from camera</string>
+
+    <!-- -->
+    <string name="preview_activity_title">保存到本地</string>
+    <string name="save_file_prefix_format">yyyy-MM-dd_HH-mm-ss</string>
 </resources>

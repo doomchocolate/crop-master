@@ -8,8 +8,9 @@
                  android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.entry.MainActivity"
+            android:name=".ui.entry.WelcomeActivity"
             android:screenOrientation="portrait"
+            android:noHistory="true"
             android:configChanges="keyboard|keyboardHidden|orientation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,8 +20,28 @@
         </activity>
 
         <activity
+            android:name=".ui.entry.MainActivity"
+            android:screenOrientation="portrait"
+            android:launchMode="singleInstance"
+            android:configChanges="keyboard|keyboardHidden|orientation">
+        </activity>
+
+        <activity
             android:name=".ui.crop.CropActivity"
             android:label="@string/crop_activity_title"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboard|keyboardHidden|orientation">
+        </activity>
+
+        <activity
+            android:name=".ui.decorate.DecorateActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="keyboard|keyboardHidden|orientation">
+        </activity>
+
+        <activity
+            android:name=".ui.decorate.PreviewActivity"
+            android:label="@string/preview_activity_title"
             android:screenOrientation="portrait"
             android:configChanges="keyboard|keyboardHidden|orientation">
         </activity>
