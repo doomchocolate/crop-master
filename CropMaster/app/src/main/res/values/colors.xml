@@ -2,14 +2,16 @@
 <resources>
     <color name="preview_title">#3E5486</color>
 
+    <color name="primary">#2E2E2E</color>
+
     <color name="preview_image_mask_color">#66000000</color>
     <color name="preview_grid_color">#22FFFFFF</color>
     <color name="text_grey_color">#FFAAAAAA</color>
+    <color name="activity_panel_background">@color/primary</color>
 
     <color name="media_picker_dialog_item_text">#727272</color>
 
     <color name="decorate_activity_background">#131315</color>
-    <color name="decorate_activity_bottom_panel_background">#2E2E2E</color>
 
     <color name="decorate_activity_grid_background">#22FFCF3F</color>
 </resources>

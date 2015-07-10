@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#2C5AA9</color>
-    <color name="primary_dark">#2C5AA9</color>
+    <color name="primary">#2E2E2E</color>
+    <color name="primary_dark">#2E2E2E</color>
     <color name="accent">#EB5347</color>
 
     <color name="iam007_activity_background_color">#F6F6F6</color>

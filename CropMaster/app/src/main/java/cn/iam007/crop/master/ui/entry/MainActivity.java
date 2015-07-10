@@ -21,6 +21,11 @@ import cn.iam007.mediapicker.MediaPickerSource;
 public class MainActivity extends BaseActivity {
 
     @Override
+    protected boolean isLaunchActivity() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

@@ -37,6 +37,11 @@ public class WelcomeActivity extends BaseActivity implements OnClickListener, On
     private String firstRunKey;
 
     @Override
+    protected boolean notDisplayToolbar() {
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 

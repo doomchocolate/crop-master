@@ -92,7 +92,7 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:layout_alignParentBottom="true"
-        android:background="@color/black_light_222222"
+        android:background="@color/activity_panel_background"
         android:orientation="horizontal">
 
         <ImageView

@@ -82,14 +82,24 @@ public class CropActivity extends BaseActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.next_step:
-                Toast.makeText(this, "click on next step", Toast.LENGTH_SHORT).show();
-//                mCropImageWidget.debugCrop();
                 DecorateManager.startDecorate(this, mCropImageWidget.getCropImageInfo());
                 break;
         }
 
         super.onOptionsItemSelected(item);
         return true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        DecorateManager.finishDecorate();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        DecorateManager.finishDecorate();
     }
 
     private View mPreStyleBtn = null;

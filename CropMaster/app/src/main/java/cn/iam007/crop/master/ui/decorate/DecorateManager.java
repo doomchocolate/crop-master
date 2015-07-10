@@ -36,13 +36,17 @@ public class DecorateManager {
         file.mkdirs();
     }
 
-    public static void startDecorate(Context context, CropImageWidget.CropImageInfo info) {
-        clearCache(context);
+    private static Activity startActivity;
+
+    public static void startDecorate(Activity activity, CropImageWidget.CropImageInfo info) {
+        startActivity = activity;
+
+        clearCache(activity);
 
         currentSession = StringUtils.randomString(32);
         currentType = info.type;
 
-        String[] titles = context.getResources().getStringArray(R.array.decorate_activity_title);
+        String[] titles = activity.getResources().getStringArray(R.array.decorate_activity_title);
         int[] icons = {
                 R.drawable.crop_activity_preview_grid_1,
                 R.drawable.crop_activity_preview_grid_2,
@@ -53,7 +57,7 @@ public class DecorateManager {
 
         // 生成每一个区域的尺寸
         Rect[] rects = new Rect[6];
-        int gap = context.getResources().getDimensionPixelSize(
+        int gap = activity.getResources().getDimensionPixelSize(
                 R.dimen.crop_activity_preview_grid_gap_width);
         int totalWidth = info.restrictArea.right - info.restrictArea.left + 1;
         int totalHeight = info.restrictArea.bottom - info.restrictArea.top + 1;
@@ -102,7 +106,7 @@ public class DecorateManager {
         int index = step - 1;
 
         Intent nextIntent = new Intent();
-        nextIntent.setClass(context, DecorateActivity.class);
+        nextIntent.setClass(activity, DecorateActivity.class);
         CropImageWidget.CropImageInfo tInfo = new CropImageWidget.CropImageInfo(info);
         tInfo.restrictArea = rects[index];
         nextIntent.putExtra(DecorateActivity.KEY_CROP, tInfo);
@@ -113,7 +117,7 @@ public class DecorateManager {
         index--;
         while (index >= 0) {
             Intent intent = new Intent();
-            intent.setClass(context, DecorateActivity.class);
+            intent.setClass(activity, DecorateActivity.class);
             tInfo = new CropImageWidget.CropImageInfo(info);
             tInfo.restrictArea = rects[index];
             intent.putExtra(DecorateActivity.KEY_CROP, tInfo);
@@ -126,7 +130,7 @@ public class DecorateManager {
             index--;
         }
 
-        context.startActivity(nextIntent);
+        activity.startActivity(nextIntent);
 
         // 初始化编辑session
         cropFiles = new ArrayList<>();
@@ -230,13 +234,24 @@ public class DecorateManager {
         cropFiles = null;
         cropRects = null;
 
-        for (Activity activity : cropActivities) {
+        if (cropActivities != null) {
+            for (Activity activity : cropActivities) {
+                try {
+                    activity.finish();
+                } catch (Exception e) {
+
+                }
+            }
+        }
+
+        if (startActivity != null) {
             try {
-                activity.finish();
+                startActivity.finish();
             } catch (Exception e) {
 
             }
         }
+        startActivity = null;
     }
 
     public static ArrayList<String> getPreviewCropFiles() {

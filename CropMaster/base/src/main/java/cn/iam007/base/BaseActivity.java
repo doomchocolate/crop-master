@@ -21,20 +21,9 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import java.util.List;
 
 import cn.iam007.base.utils.DialogBuilder;
-import cn.iam007.base.utils.LogUtil;
 import cn.iam007.base.utils.PlatformUtils;
 
 public abstract class BaseActivity extends AppCompatActivity {
-    protected final static String TAG = "BaseActivity";
-
-    /**
-     * 是否是debug模式，如果不是，所有debug开头的函数不会执行
-     */
-    protected static boolean DEBUG_MODE = true;
-
-    static {
-        DEBUG_MODE = false;
-    }
 
     private FrameLayout mContainer = null;
     private Toolbar mToolbar;
@@ -62,23 +51,33 @@ public abstract class BaseActivity extends AppCompatActivity {
         mTintManager = new SystemBarTintManager(this);
         mTintManager.setStatusBarTintEnabled(true);
         mTintManager.setStatusBarTintResource(R.color.primary);
-        //        mTintManager.setNavigationBarTintEnabled(true);
+        mTintManager.setNavigationBarTintEnabled(true);
+        mTintManager.setNavigationBarTintResource(R.color.primary);
+
 
         mContainer = (FrameLayout) findViewById(R.id.container);
 
         initView();
     }
 
+    protected boolean notDisplayToolbar() {
+        return false;
+    }
+
     private void initView() {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
-            if (isLaunchActivity()){
+            if (isLaunchActivity()) {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             } else {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
             PlatformUtils.applyFonts(this, mToolbar);
+        }
+
+        if (notDisplayToolbar()) {
+            mToolbar.setVisibility(View.GONE);
         }
     }
 
@@ -185,7 +184,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     /**
      * 是否是启动的activity
      */
-    private boolean isLaunchActivity() {
+    protected boolean isLaunchActivity() {
         return this.getClass().getName().equalsIgnoreCase(mLauncherClass);
     }
 
@@ -195,7 +194,6 @@ public abstract class BaseActivity extends AppCompatActivity {
             ActivityManager am = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
             List<ActivityManager.RunningTaskInfo> list = am.getRunningTasks(1000);
 
-            LogUtil.d(TAG, "================running app===============");
             String packageName;
             String className = null;
             ActivityManager.RunningTaskInfo _info = null;
@@ -233,7 +231,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         return mProgressDialog;
     }
 
-    protected void dismissProgressDialog(){
+    protected void dismissProgressDialog() {
         if (mProgressDialog != null) {
             try {
                 mProgressDialog.dismiss();
